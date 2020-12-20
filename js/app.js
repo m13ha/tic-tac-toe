@@ -31,7 +31,7 @@ let app = {
       if (clickedCell.localName === "td") {
         if (app.turn === "player") {
           app.cells.forEach((item) => {
-            //make sure the clicked cell is available
+            //make sure the clicked cell is not taken
             if (clickedCell === item[0] && $(clickedCell).hasClass('available') === true) {
               clickedCell.innerHTML = "x";
               $(clickedCell).addClass('player');
