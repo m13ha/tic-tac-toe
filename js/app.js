@@ -7,7 +7,11 @@ let app = {
 
   drawChance: 0,
 
-  difficulty: 'normal',
+  playerScore: 0,
+
+  computerScore: 0,
+
+  delay: false,
 
   cells: [
     $("#c1"), $("#c2"), $("#c3"), $("#c4"), $("#c5"), $("#c6"), $("#c7"), $("#c8"), $("#c9")
@@ -24,6 +28,19 @@ let app = {
     [$("#c7"), $("#c5"), $("#c3"), true]
   ],
 
+  res: {
+    v1: [$("#c1"), $("#c2"), $("#c3")],
+    v2: [$("#c4"), $("#c5"), $("#c6")],
+    v3: [$("#c7"), $("#c8"), $("#c9")],
+    h1: [$("#c1"), $("#c4"), $("#c7")],
+    h2: [$("#c2"), $("#c5"), $("#c8")],
+    h3: [$("#c3"), $("#c6"), $("#c9")],
+    d1: [$("#c1"), $("#c5"), $("#c9")],
+    d2: [$("#c7"), $("#c5"), $("#c3")]
+  },
+
+
+
   playerTurn: () => {
     app.col.click(function (e) {
       e.preventDefault();
@@ -32,13 +49,12 @@ let app = {
         if (app.turn === "player") {
           app.cells.forEach((item) => {
             //make sure the clicked cell is available
-            if (clickedCell === item[0] && $(clickedCell).hasClass('available') === true) {
+            if (clickedCell === item[0] && $(clickedCell).hasClass('available') === true && app.delay === false) {
               clickedCell.innerHTML = "x";
               $(clickedCell).addClass('player');
               $(clickedCell).removeClass('available');
               app.tableChecker(clickedCell);
               app.turn = "computer";
-              // computer turn
               app.computerTurn();
             }
           });
@@ -62,87 +78,81 @@ let app = {
 
     normPlay = function () {
       enVictory();
+      blocking();
+      comPlay();
+
     };
 
     enVictory = function () {
-      for (let i = 0; i < 8; i++) {
-        let array = app.winMoves[i];
-        let cell1 = array[0][0];
-        let cell2 = array[1][0];
-        let cell3 = array[2][0];
-        if ($(cell1).hasClass('computer') === true || $(cell2).hasClass('computer') === true) {
-          if ($(cell1).hasClass('computer') === true || $(cell3).hasClass('computer') === true) {
-            if ($(cell2).hasClass('computer') === true || $(cell3).hasClass('computer') === true) {
-              for (let p = 0; p < 3; p++) {
-                if ($(array[p][0]).hasClass('available') === true) {
-                  console.log(array[p][0]);
-                  movePlayer(array[p][0], 'winning move');
+      for (let property in app.res) {
+        let array = app.res[property];
+        let cell1 = $(array[0][0]).hasClass('computer');
+        let cell2 = $(array[1][0]).hasClass('computer');
+        let cell3 = $(array[2][0]).hasClass('computer');
+        if (cell1 || cell2 === true) {
+          if (cell2 || cell3 === true) {
+            if (cell1 || cell3 === true) {
+              array.forEach((index) => {
+                let cell = index[0];
+                if ($(cell).hasClass('available') === true) {
+                  movePlayer(cell)
                 }
-              }
+              })
             }
-          };
-        } else {
-          blocking();
+          }
         }
       }
     };
 
     blocking = function () {
-      for (let i = 0; i < 8; i++) {
-        let array = app.winMoves[i];
-        let cell1 = array[0][0];
-        let cell2 = array[1][0];
-        let cell3 = array[2][0];
-        if ($(cell1).hasClass('player') === true || $(cell2).hasClass('player') === true) {
-          if ($(cell1).hasClass('player') === true || $(cell3).hasClass('player') === true) {
-            if ($(cell2).hasClass('player') === true || $(cell3).hasClass('player') === true) {
-              for (let p = 0; p < 3; p++) {
-                if ($(array[p][0]).hasClass('available') === true) {
-                  console.log(array[p][0]);
-                  movePlayer(array[p][0], 'blocking move');
+      for (let property in app.res) {
+        let array = app.res[property];
+        let cell1 = $(array[0][0]).hasClass('player');
+        let cell2 = $(array[1][0]).hasClass('player');
+        let cell3 = $(array[2][0]).hasClass('player');
+        if (cell1 || cell2 === true) {
+          if (cell2 || cell3 === true) {
+            if (cell1 || cell3 === true) {
+              array.forEach((index) => {
+                let cell = index[0];
+                if ($(cell).hasClass('available') === true) {
+                  movePlayer(cell)
                 }
-              }
+              })
             }
-          };
-        } else {
-          comPlay();
+          }
         }
-      };
+      }
     }
 
     moveChecker = function (data) {
       if ($(data).hasClass('available') === true && move[3] === true) {
-        movePlayer(data, 'checker winning');
+        movePlayer(data);
       } else if (app.drawChance >= 8 && $(data).hasClass('available') === true) {
-        movePlayer(data, 'checker draw');
-      }
-      else {
+        movePlayer(data);
+      } else {
         comPlay();
       }
     };
 
-    movePlayer = function (data, where) {
-      if (app.turn === "computer") {
+    movePlayer = function (data) {
+      if (app.turn === "computer" && app.delay === false) {
         data.innerHTML = "o";
         $(data).removeClass('available');
         $(data).addClass('taken');
         $(data).addClass('computer');
-        console.log(data, where);
         app.tableChecker();
         app.turn = "player";
       };
     };
 
-    if (app.difficulty === "easy") {
-      comPlay();
-    } else if (app.difficulty === "normal") {
-      normPlay();
-    }
+    normPlay();
   },
 
   drawChecker: () => {
     if (app.cellCount === 0) {
-      alert('DRAW');
+      let alert = $("#alert");
+      alert[0].innerHTML = 'DRAW!!!';
       app.reset();
     }
 
@@ -154,12 +164,20 @@ let app = {
       let cell1 = item[0][0];
       let cell2 = item[1][0];
       let cell3 = item[2][0];
+      let playerscore = $('#score-p');
+      let compscore = $('#score-c');
+      let alert = $("#alert");
+
       if ($(cell1).hasClass('player') === true && $(cell2).hasClass('player') === true && $(cell3).hasClass('player') === true) {
-        alert('PLAYER WINS');
+        alert[0].innerHTML = 'player wins!!!';
+        app.playerScore += 1;
+        playerscore[0].innerHTML = app.playerScore;
         app.reset();
       };
       if ($(cell1).hasClass('computer') === true && $(cell2).hasClass('computer') === true && $(cell3).hasClass('computer') === true) {
-        alert('COMPUTER WINS');
+        alert[0].innerHTML = 'computer wins!!!';
+        app.computerScore += 1;
+        compscore[0].innerHTML = app.computerScore;
         app.reset();
       };
     });
@@ -175,19 +193,28 @@ let app = {
   },
 
   reset: () => {
-    app.cells.forEach((item) => {
-      item[0].innerHTML = " ";
-      app.cellCount = 9;
-      app.drawChance = 0;
-      $(item[0]).removeClass('taken');
-      $(item[0]).removeClass('player');
-      $(item[0]).removeClass('computer');
-      $(item[0]).addClass('available');
-    });
+    app.delay = true;
+    let alert = $("#alert");
+    setTimeout(() => {
+      app.cells.forEach((item) => {
+        item[0].innerHTML = " ";
+        app.cellCount = 9;
+        app.drawChance = 0;
+        $(item[0]).removeClass('taken');
+        $(item[0]).removeClass('player');
+        $(item[0]).removeClass('computer');
+        $(item[0]).addClass('available');
+      });
 
-    app.winMoves.forEach((array) => {
-      array[3] = true;
-    })
+      app.winMoves.forEach((array) => {
+        array[3] = true;
+      });
+      app.delay = false;
+      if(app.turn === 'computer'){
+        app.computerTurn();
+      };
+      alert[0].innerHTML = '';
+    }, 3000)
   },
 
   tableChecker: (data) => {
@@ -201,5 +228,3 @@ let app = {
 };
 
 app.playerTurn();
-
-
