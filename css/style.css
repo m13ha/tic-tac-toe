@@ -26,11 +26,11 @@ body {
 }
 
 .info {
-    width: 300px;
+    width: 400px;
 }
 
 .info-ls {
-    width: 300px;
+    width: 400px;
     float: right;
     list-style: none;
     display: flex;
@@ -41,11 +41,21 @@ body {
 }
 
 .info-ls li {
-    width: 70px;
+    margin: 10px;
+}
+
+.reset-btn button {
+    width: 50px;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #fff;
+}
+
+.reset-btn button:hover {
+    border: 3px solid #000;
 }
 
 .gboard {
-    min-width: 300px;
+    min-width: 350px;
     height: 400px;
 }
 
@@ -82,9 +92,22 @@ body {
 }
 
 
+@media (max-width: 450px){
+    .info {
+        font-size: 12px;
+        width: 100%;
+    }
 
+    .info-ls{
+        width: 100%;
+        display: block;
+    }
 
+    .info-ls li {
+        margin: 15px;
+    }
 
+}
 
 
 

@@ -214,7 +214,7 @@ let app = {
         app.computerTurn();
       };
       alert[0].innerHTML = '';
-    }, 3000)
+    }, 2500)
   },
 
   tableChecker: (data) => {
@@ -225,6 +225,39 @@ let app = {
 
   },
 
+  resetBtn: () => {
+     let resetBtn = $('#reset');
+     let playerscore = $('#score-p');
+     let compscore = $('#score-c');
+     resetBtn.click((e) => {
+       e.preventDefault();
+      app.cells.forEach((item) => {
+        item[0].innerHTML = " ";
+        app.cellCount = 9;
+        app.drawChance = 0;
+        $(item[0]).removeClass('taken');
+        $(item[0]).removeClass('player');
+        $(item[0]).removeClass('computer');
+        $(item[0]).addClass('available');
+      });
+
+      app.winMoves.forEach((array) => {
+        array[3] = true;
+      });
+      app.delay = false;
+      app.playerScore = 0;
+      app.computerScore = 0;
+      app.turn = 'player';
+      compscore[0].innerHTML = app.computerScore;
+      playerscore[0].innerHTML = app.playerScore;
+     })
+  },
+
+  launcher : () => {
+    app.playerTurn();
+    app.resetBtn();
+  }
+
 };
 
-app.playerTurn();
+app.launcher();
