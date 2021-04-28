@@ -115,9 +115,21 @@ body {
 
     .gboard {
         min-width: 280px;
-        height: 360px;
+        height: 320px;
     }
 }
 
 
 
+@media (max-width: 360px){
+    
+    .gboard td {
+        width: 60px;
+        height: 60px;
+    }
+
+    .gboard {
+        min-width: 280px;
+        height: 280px;
+    }
+}
