@@ -107,6 +107,12 @@ body {
         margin: 15px;
     }
 
+    
+    .gboard td {
+        width: 100px;
+        height: 100px;
+    }
+
 }
 
 
