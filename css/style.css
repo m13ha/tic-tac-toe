@@ -109,10 +109,14 @@ body {
 
     
     .gboard td {
-        width: 100px;
-        height: 100px;
+        width: 70px;
+        height: 70px;
     }
 
+    .gboard {
+        min-width: 280px;
+        height: 360px;
+    }
 }
 
 
